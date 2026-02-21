@@ -29,7 +29,6 @@ cmake-build-*/
 
 *.d
 *.i
-*.s
 
 [Bb]uild/
 [Dd]ebug/
