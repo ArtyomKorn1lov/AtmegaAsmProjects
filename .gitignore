@@ -47,3 +47,11 @@ obj/
 *.log
 *.tmp
 *.bak
+
+# Altium History and backups
+History/
+*.Bak
+
+# Output files
+*.pdf
+Project Outputs for */
