@@ -1,6 +1,7 @@
 #define __SFR_OFFSET 0x00
 #include "avr/io.h"
 
+.text
 .global setupTimer
 .global waitTimer
 
@@ -16,23 +17,28 @@
 младший байт помещаем в OCR1AL
 */
 setupTimer:
-    CLR R16
-    STS TCCR1A, R16
-    MOV R16, R17
-    STS OCR1AH, R16
-    MOV R16, R18
-    STS OCR1AL, R16
-    LDI R16, (1 << WGM12) | (1 << CS12) | (1 << CS10)
-    STS TCCR1B, R16
-    RET
+    clr r16
+    sts TCCR1A, r16
+    mov r16, r17
+    sts OCR1AH, r16
+    mov r16, r18
+    sts OCR1AL, r16
+    ldi r16, (1 << WGM12) | (1 << CS12) | (1 << CS10)
+    sts TCCR1B, r16
+    clr r17
+    clr r18
+    clr r16
+    ret
 
 /*  
 Ожидание срабатывания таймера
 */
 waitTimer:
-    IN R16, TIFR1
-    SBRS R16, OCF1A
-    RJMP waitTimer
-    LDI R16, (1 << OCF1A)
-    OUT TIFR1, R16
-    RET
+    clr r16
+    in r16, TIFR1
+    sbrs r16, OCF1A
+    rjmp waitTimer
+    ldi r16, (1 << OCF1A)
+    out TIFR1, r16
+    clr r16
+    ret

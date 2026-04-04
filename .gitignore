@@ -43,6 +43,7 @@ obj/
 .pioenvs/
 .piolibdeps/
 /lib/deps/
+/tmp
 
 *.log
 *.tmp
