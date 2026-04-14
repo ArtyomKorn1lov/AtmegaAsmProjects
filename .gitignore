@@ -29,7 +29,6 @@ cmake-build-*/
 
 *.d
 *.i
-*.s
 
 [Bb]uild/
 [Dd]ebug/
@@ -44,7 +43,16 @@ obj/
 .pioenvs/
 .piolibdeps/
 /lib/deps/
+/tmp
 
 *.log
 *.tmp
 *.bak
+
+# Altium History and backups
+History/
+*.Bak
+
+# Output files
+*.pdf
+Project Outputs for */
