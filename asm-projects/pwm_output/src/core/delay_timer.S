@@ -4,11 +4,15 @@
 // Программа реализующая задержку программы через timer 2 в ATmega328p, timer 2 это 8-битный таймер
 
 .global seconds_count_adr
+.global miliseconds_adr
 .global setupTimer
-.global waitTimer
+.global waitSecondsTimer
+.global waitMilisecondsTimer
 
 .section .data
 seconds_count_adr: .space 1
+// Значения от 0 до 255 миллисекунд
+miliseconds_adr: .space 1
 
 .section .text
 
@@ -39,34 +43,34 @@ setupTimer:
 // Параметр функции r17, где указывается кол-во секунд
 // В r18 хранится число количество 1/4 секунд
 // В r19 хранится 250 миллисекунд
-waitTimer:
+waitSecondsTimer:
     // Загрузка данных по адресу seconds_count_adr
     lds r17, seconds_count_adr
     // Если кол-во секунд 0, переход к концу исполнения функции
     cpi r17, 0
-    breq waitEnd
+    breq waitSecondsEnd
 setSec:
     // Установка количества 1/4 секунды, промежуточное значение нужно, потому что регистры 8-битные, максимум для счёта кратных миллисекунд можно хранить число 250
     ldi r18, 4
 set250Ms:
     // Установка 250 миллисекунд
     ldi r19, 250
-waitLoop:
+waitSecondsLoop:
     // TIFR2 - регистр флагов таймера
     // OCF2A - номер бита, конкретное число, порог счёта timer 2, можно представить как `0010000`
     // Если счёт не завершился (флаг OCF2A не установлен в TIFR2), продолжаем цикл
     in r16, TIFR2
     sbrs r16, OCF2A
-    rjmp waitLoop    
+    rjmp waitSecondsLoop    
     // Сброс флага TIFR2, запись в него числа (1 << OCF2A), так работает AVR
     ldi r16, (1 << OCF2A)
     out TIFR2, r16
     // Уменьшить счётчик миллисекунд
-    // Если 250 мс не прошли, продолжить цикл waitLoop
+    // Если 250 мс не прошли, продолжить цикл waitSecondsLoop
     // Команды inc и dec влияют на SREG(регистр флагов процессора), когда результат любой арифметической операции становится равным нулю, процессор автоматически устанавливает флаг Z (Zero flag) в SREG
     // brne сравнивает флаг Z, если он 0, значит будет переход по метке
     dec r19
-    brne waitLoop
+    brne waitSecondsLoop
     // Уменьшить счётчик 1/4 секунды
     // Если 250 мс не прошли, продолжить цикл set250Ms
     dec r18
@@ -75,5 +79,21 @@ waitLoop:
     // Если 250 мс не прошли, продолжить цикл setSec
     dec r17
     brne setSec
-waitEnd:
+waitSecondsEnd:
+    ret
+
+// Delay на задержку в миллисекундах, от 0 до 255 секунд можно указать для задержки
+waitMilisecondsTimer:
+    lds r17, miliseconds_adr
+    cpi r17, 0
+    breq waitMilisecondsEnd
+waitMilisecondsLoop:
+    in r16, TIFR2
+    sbrs r16, OCF2A
+    rjmp waitMilisecondsLoop    
+    ldi r16, (1 << OCF2A)
+    out TIFR2, r16
+    dec r17
+    brne waitMilisecondsLoop
+waitMilisecondsEnd:  
     ret

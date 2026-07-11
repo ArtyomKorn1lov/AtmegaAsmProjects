@@ -1,6 +1,6 @@
 #include <Arduino.h>;
 
-const int PWM_PIN = 3;
+const int PWM_PIN = 5;
 const int PWM_SERIAL_DIVIDER = 5;
 const int MAX_PWM_VALUE = 255;
 

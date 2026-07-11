@@ -1,15 +1,16 @@
 #define __SFR_OFFSET 0x00
 #include "avr/io.h"
 
-.equ delay_count, 2
-.equ element_count, 6
+.equ delay_count, 30
 // На 5-ый pin подаётся шим-сигнал
 .equ port_d, (1 << 5)
+.equ pwm_max_value, 255
+.equ pwm_serial_divider, 5
 
 .section .data
 .org 0x0100
-list_adr: .space element_count
-counter_adr: .space 1
+pwm_value_adr: .space 1
+is_decrement_flag_adr: .space 1
 
 .section .text
 .global onSetup
@@ -17,9 +18,9 @@ counter_adr: .space 1
 
 onDelay:
     ldi r16, delay_count
-    sts seconds_count_adr, r16
+    sts miliseconds_adr, r16
     rcall setupTimer
-    rcall waitTimer
+    rcall waitMilisecondsTimer
     ret
 
 onSetup:
@@ -31,21 +32,65 @@ onSetup:
 
     ldi r16, port_d
     out DDRD, r16
+    // Настройка ШИМ через установку битов в регистры таймера 0 TCCR0A и TCCR0B
     ldi r16, (1 << COM0B1) | (1 << WGM01) | (1 << WGM00)
     out TCCR0A, r16
     ldi r16, (1 << CS01) | (1 << CS00)
     out TCCR0B, r16
+
+    ldi r16, 0
+    sts pwm_value_adr, r16
+    sts is_decrement_flag_adr, r16
     ret
 
 onLoop:
-    ldi r16, 110
+    lds r16, pwm_value_adr
     out OCR0B, r16
 
+    sts div_dividend_adr, r16
+    ldi r17, pwm_serial_divider
+    sts div_divider_adr, r17
+    rcall executeDiv
+    lds r17, mod_result_adr
+
+    cpi r17, 0
+    breq startPrintValue
+    rjmp endPrintValue
+startPrintValue:
+    lds r16, pwm_value_adr
     sts value_for_serial_print_adrs, r16
     rcall serialPrintNumber
     ldi r17, '\n'
     sts value_for_serial_print_adrs, r17
     rcall serialPrintChar
-    
+endPrintValue:
+    lds r16, pwm_value_adr
+    lds r17, is_decrement_flag_adr
+
+    cpi r17, 1
+    breq decrementPwmValue
+incrementPwmValue:
+    inc r16
+    rjmp doneCalculatePwmValue
+decrementPwmValue:
+    dec r16
+    rjmp doneCalculatePwmValue
+doneCalculatePwmValue:
+    sts pwm_value_adr, r16
+
+    cpi r16, pwm_max_value
+    breq setDecrementFlag
+    cpi r16, 0
+    breq setIncrementFlag
+    rjmp doneSetFlag
+setDecrementFlag:
+    ldi r17, 1
+    sts is_decrement_flag_adr, r17
+    rjmp doneSetFlag
+setIncrementFlag:
+    ldi r17, 0
+    sts is_decrement_flag_adr, r17
+    rjmp doneSetFlag
+doneSetFlag:
     rcall onDelay
     ret
