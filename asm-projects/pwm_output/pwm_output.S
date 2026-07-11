@@ -3,6 +3,8 @@
 
 .equ delay_count, 2
 .equ element_count, 6
+// На 5-ый pin подаётся шим-сигнал
+.equ port_d, (1 << 5)
 
 .section .data
 .org 0x0100
@@ -27,39 +29,23 @@ onSetup:
     sts uart_exchange_speed_adr + 1, r16
     rcall setupSerialPrint
 
-    ldi r30, lo8(list_adr)
-    ldi r31, hi8(list_adr)
-    ldi r16, 'h'
-    st Z+, r16
-    ldi r16, 'e'
-    st Z+, r16
-    ldi r16, 'l'
-    st Z+, r16
-    ldi r16, 'l'
-    st Z+, r16
-    ldi r16, 'o'
-    st Z+, r16
-    ldi r16, '\n'
-    st Z+, r16
-    ret
-
-printItems:
-    ld r16, Z
-    sts char_for_serial_print_adrs, r16
-    rcall serialPrintChar
-    lds r16, counter_adr
-    inc r16
-    sts counter_adr, r16
-    inc r30
-    cpi r30, lo8(list_adr + element_count)
-    brlo printItems
+    ldi r16, port_d
+    out DDRD, r16
+    ldi r16, (1 << COM0B1) | (1 << WGM01) | (1 << WGM00)
+    out TCCR0A, r16
+    ldi r16, (1 << CS01) | (1 << CS00)
+    out TCCR0B, r16
     ret
 
 onLoop:
-    ldi r30, lo8(list_adr)
-    ldi r31, hi8(list_adr)
-    ldi r16, 0
-    sts counter_adr, r16
-    rcall printItems
+    ldi r16, 110
+    out OCR0B, r16
+
+    sts value_for_serial_print_adrs, r16
+    rcall serialPrintNumber
+    ldi r17, '\n'
+    sts value_for_serial_print_adrs, r17
+    rcall serialPrintChar
+    
     rcall onDelay
     ret

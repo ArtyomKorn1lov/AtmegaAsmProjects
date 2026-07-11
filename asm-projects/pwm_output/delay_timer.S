@@ -8,7 +8,6 @@
 .global waitTimer
 
 .section .data
-.org 0x0100
 seconds_count_adr: .space 1
 
 .section .text

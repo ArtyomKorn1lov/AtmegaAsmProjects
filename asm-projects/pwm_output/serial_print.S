@@ -4,18 +4,28 @@
 // Программа реализующая вывод значения однобайтовой переменной в монитор порта, через протокол UART
 
 .global uart_exchange_speed_adr
-.global char_for_serial_print_adrs
+.global value_for_serial_print_adrs
 .global setupSerialPrint
 .global serialPrintChar
+.global serialPrintDigit
+.global serialPrintNumber
+
+// Делители для извлечения цифр из 1-байтового числа
+.equ digitFirstDivider, 100
+.equ digitSecondDivider, 10
+.equ digitLastDivider, 1
+// ! Делители для извлечения цифр из 1-байтового числа
+// Ascii код нуля
+.equ zeroAsciiCode, 48
+
 
 .section .data
-.org 0x0100
 // Адрес в памяти, в котором находится числовое значение для установки скорости обмена данными в UART
 // Пример:
 // Если скорость обмена 9600 бод, то значение скорости вычиляется U(обмена) = m(частота работы процессора в герцах, 16 Мг)/(16 * 9600) - 1 = 103
 uart_exchange_speed_adr: .space 2
 // Адрес памяти, в котором находится значение, которое нужно вывести
-char_for_serial_print_adrs: .space 1
+value_for_serial_print_adrs: .space 1
 
 .section .text
 
@@ -43,7 +53,50 @@ serialPrintChar:
     // Если бит в регистре, соотвествующий биту UDRE0, не установлен в UCSR0A, повторяем цикл
     sbrs r16, UDRE0
     rjmp serialPrintChar
-    lds r16, char_for_serial_print_adrs
+    lds r16, value_for_serial_print_adrs
     // В регистр UDR0 устанавливается однобайтовое значение
     sts UDR0, r16
+    ret
+
+// Печать цифры от 0 до 9
+serialPrintDigit:
+    lds r16, value_for_serial_print_adrs
+    // Чтобы корректно вывести число, нужно через таблицу ASCII прибавить код нуля к числу, тогда будет осущствлён сдвиг до нужной цифры
+    subi r16, -zeroAsciiCode
+    sts value_for_serial_print_adrs, r16
+    rcall serialPrintChar
+    ret
+
+// Печать однобайтового числа (от 0 до 255)
+serialPrintNumber:
+    // Целочисленное деление на 100, получаемую цифру печатаем
+    lds r16, value_for_serial_print_adrs
+    ldi r17, digitFirstDivider
+    sts div_dividend_adr, r16
+    sts div_divider_adr, r17
+    rcall executeDiv
+    lds r16, div_result_adr
+    sts value_for_serial_print_adrs, r16
+    rcall serialPrintDigit
+
+    // Целочисленное деление на 10, получаемую цифру печатаем
+    lds r16, mod_result_adr
+    ldi r17, digitSecondDivider
+    sts div_dividend_adr, r16
+    sts div_divider_adr, r17
+    rcall executeDiv
+    lds r16, div_result_adr
+    sts value_for_serial_print_adrs, r16
+    rcall serialPrintDigit
+
+    // Целочисленное деление на 1, получаемую цифру печатаем
+    lds r16, mod_result_adr
+    ldi r17, digitLastDivider
+    sts div_dividend_adr, r16
+    sts div_divider_adr, r17
+    rcall executeDiv
+    lds r16, div_result_adr
+    sts value_for_serial_print_adrs, r16
+    rcall serialPrintDigit
+
     ret
