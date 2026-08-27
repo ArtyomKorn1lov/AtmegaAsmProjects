@@ -46,8 +46,7 @@ uint8_t calculateHighMathExample(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uin
 
 void calculateBytes()
 {
-    String label = "Byte values:";
-    printFormatValue(label);
+    printFormatValue(F("Byte values:"));
     Serial.println(addition(111, 58));
     Serial.println(subtraction(255, 187));
     Serial.println(multiply(34, 7));

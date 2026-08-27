@@ -3,24 +3,23 @@
 #include "structures_variables/structures_variables.h"
 
 void processStructExample() {
-    String label = "Structures values 1:";
-    printFormatValue(label);
+    printFormatValue(F("Structure values:"));
     UserList *userList = (struct UserList *)calloc(1, sizeof(UserList));
     *userList = usersCreate();
-    usersPrint(*userList);
+    CharString *title = (struct CharString *)calloc(1, sizeof(CharString));
+    if (!charStringInit(&title)) 
+    {
+        Serial.println(F("Error allocate memory string of title"));
+        return;
+    }
+    charStringSet(&title, "Original users:");
+    usersPrint(*userList, *title);
+    appendUser(&userList);
+    deactivateById(&userList, 2);
+    removeById(&userList, 1);
+    updateById(&userList, 3);
+    charStringSet(&title, "Updated users:");
+    usersPrint(*userList, *title);
     usersFree(&userList);
-    
-    label = "Structures values 2:";
-    printFormatValue(label);
-    userList = (struct UserList *)calloc(1, sizeof(UserList));
-    *userList = usersCreate();
-    usersPrint(*userList);
-    usersFree(&userList);
-
-    label = "Structures values 3:";
-    printFormatValue(label);
-    userList = (struct UserList *)calloc(1, sizeof(UserList));
-    *userList = usersCreate();
-    usersPrint(*userList);
-    usersFree(&userList);
+    charStringFree(&title);
 }

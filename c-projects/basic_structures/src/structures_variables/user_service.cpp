@@ -15,7 +15,7 @@ UserList usersCreate()
 
     if (createdUsers == nullptr)
     {
-        Serial.println("Error allocate memory of Users");
+        Serial.println(F("Error allocate memory of Users"));
         return emptyUserList;
     }
 
@@ -29,17 +29,13 @@ UserList usersCreate()
     createdPerson = (struct Person *)calloc(1, sizeof(Person));
     if (createdPerson == nullptr)
     {
-        Serial.println("Error allocate memory of create User 1");
+        Serial.println(F("Error allocate memory of create User 1"));
         return;
     }
     if (
-        !charStringInit(&createdPerson->xmlId) 
-        || !charStringInit(&createdPerson->name)
-        || !charStringInit(&createdPerson->phone)
-        || !charStringInit(&createdPerson->email)
-    ) 
+        !charStringInit(&createdPerson->xmlId) || !charStringInit(&createdPerson->name) || !charStringInit(&createdPerson->phone) || !charStringInit(&createdPerson->email))
     {
-        Serial.println("Error allocate memory strings of create Person 1");
+        Serial.println(F("Error allocate memory strings of create Person 1"));
         return;
     }
     charStringSet(&createdPerson->xmlId, "2fb52009-ad38-430a-a41d-645603a249fa");
@@ -50,13 +46,13 @@ UserList usersCreate()
     createdAvatar = (struct Avatar *)calloc(1, sizeof(Avatar));
     if (createdAvatar == nullptr)
     {
-        Serial.println("Error allocate memory of create Avatar 1");
+        Serial.println(F("Error allocate memory of create Avatar 1"));
         return;
     }
     createdAvatar->id = 1;
     if (!charStringInit(&createdAvatar->name))
     {
-        Serial.println("Error allocate memory strings of create User 1");
+        Serial.println(F("Error allocate memory strings of create User 1"));
         return;
     }
     charStringSet(&createdAvatar->name, "Admin");
@@ -72,17 +68,13 @@ UserList usersCreate()
     createdPerson = (struct Person *)calloc(1, sizeof(Person));
     if (createdPerson == nullptr)
     {
-        Serial.println("Error allocate memory of create Person 2");
+        Serial.println(F("Error allocate memory of create Person 2"));
         return;
     }
     if (
-        !charStringInit(&createdPerson->xmlId) 
-        || !charStringInit(&createdPerson->name)
-        || !charStringInit(&createdPerson->phone)
-        || !charStringInit(&createdPerson->email)
-    ) 
+        !charStringInit(&createdPerson->xmlId) || !charStringInit(&createdPerson->name) || !charStringInit(&createdPerson->phone) || !charStringInit(&createdPerson->email))
     {
-        Serial.println("Error allocate memory strings of create User 2");
+        Serial.println(F("Error allocate memory strings of create User 2"));
         return;
     }
     charStringSet(&createdPerson->xmlId, "fc15af99-9bc7-49c3-adff-0c3ed6869a65");
@@ -93,13 +85,13 @@ UserList usersCreate()
     createdAvatar = (struct Avatar *)calloc(1, sizeof(Avatar));
     if (createdAvatar == nullptr)
     {
-        Serial.println("Error allocate memory of create Avatar 2");
+        Serial.println(F("Error allocate memory of create Avatar 2"));
         return;
     }
     createdAvatar->id = 2;
     if (!charStringInit(&createdAvatar->name))
     {
-        Serial.println("Error allocate memory strings of create User 2");
+        Serial.println(F("Error allocate memory strings of create User 2"));
         return;
     }
     charStringSet(&createdAvatar->name, "Manager");
@@ -115,17 +107,13 @@ UserList usersCreate()
     createdPerson = (struct Person *)calloc(1, sizeof(Person));
     if (createdPerson == nullptr)
     {
-        Serial.println("Error allocate memory of create Person 3");
+        Serial.println(F("Error allocate memory of create Person 3"));
         return;
     }
     if (
-        !charStringInit(&createdPerson->xmlId) 
-        || !charStringInit(&createdPerson->name)
-        || !charStringInit(&createdPerson->phone)
-        || !charStringInit(&createdPerson->email)
-    ) 
+        !charStringInit(&createdPerson->xmlId) || !charStringInit(&createdPerson->name) || !charStringInit(&createdPerson->phone) || !charStringInit(&createdPerson->email))
     {
-        Serial.println("Error allocate memory strings of create User 3");
+        Serial.println(F("Error allocate memory strings of create User 3"));
         return;
     }
     charStringSet(&createdPerson->xmlId, "45221347-f2b3-47c1-bdbc-7196866165ff");
@@ -136,13 +124,13 @@ UserList usersCreate()
     createdAvatar = (struct Avatar *)calloc(1, sizeof(Avatar));
     if (createdAvatar == nullptr)
     {
-        Serial.println("Error allocate memory of create Avatar 3");
+        Serial.println(F("Error allocate memory of create Avatar 3"));
         return;
     }
     createdAvatar->id = 3;
     if (!charStringInit(&createdAvatar->name))
     {
-        Serial.println("Error allocate memory strings of create User 3");
+        Serial.println(F("Error allocate memory strings of create User 3"));
         return;
     }
     charStringSet(&createdAvatar->name, "Agent");
@@ -160,11 +148,127 @@ UserList usersCreate()
     return userList;
 }
 
-void usersPrint(UserList userList)
+void appendUser(UserList **userList)
 {
-    String label = "Original users:";
-    printFormatValue(label);
-    Serial.print("Users length: ");
+    if (userList == nullptr)
+    {
+        Serial.println(F("Users cannot be null"));
+        return;
+    }
+
+    struct User *createdUser = nullptr;
+    struct Person *createdPerson = nullptr;
+    struct Avatar *createdAvatar = nullptr;
+    int *length = &(*userList)->length;
+    User *items = (*userList)->items;
+    items = (User *)realloc(items, (*length + 1) * sizeof(User));
+    if (items == nullptr)
+    {
+        Serial.println(F("Error allocate memory of Users"));
+        return;
+    }
+    (*length)++;
+    createdUser = &items[(*length) - 1];
+    memset(createdUser, 0, sizeof(User));
+
+    createdUser->id = 4;
+    createdUser->isAdmin = false;
+    createdPerson = (struct Person *)calloc(1, sizeof(Person));
+    if (createdPerson == nullptr)
+    {
+        Serial.println(F("Error allocate memory of create appended User"));
+        return;
+    }
+    if (
+        !charStringInit(&createdPerson->xmlId) || !charStringInit(&createdPerson->name) || !charStringInit(&createdPerson->phone) || !charStringInit(&createdPerson->email))
+    {
+        Serial.println(F("Error allocate memory strings of appended Person"));
+        return;
+    }
+    charStringSet(&createdPerson->xmlId, "428db1e4-2d1d-4449-bb5c-ee533e77b77e");
+    charStringSet(&createdPerson->name, "Test");
+    charStringSet(&createdPerson->phone, "+79999999999");
+    charStringSet(&createdPerson->email, "test@mail.com");
+    createdPerson->age = 24;
+    createdAvatar = (struct Avatar *)calloc(1, sizeof(Avatar));
+    if (createdAvatar == nullptr)
+    {
+        Serial.println(F("Error allocate memory of appended Avatar"));
+        return;
+    }
+    createdAvatar->id = 4;
+    if (!charStringInit(&createdAvatar->name))
+    {
+        Serial.println(F("Error allocate memory strings of appended create User"));
+        return;
+    }
+    charStringSet(&createdAvatar->name, "Agent");
+    createdAvatar->width = 60;
+    createdAvatar->heigth = 60;
+    createdPerson->avatar = createdAvatar;
+    createdUser->person = createdPerson;
+    createdUser->status = Status::ACTIVE;
+
+    (*userList)->items = items;
+}
+
+int findIndexById(UserList *userList, int id) 
+{
+    if (userList == nullptr)
+    {
+        Serial.println(F("Users cannot be null"));
+        return;
+    }
+    int index = 0;
+    for (uint8_t count = 0; count < userList->length; count++)
+    {
+        if ((&userList->items[count])->id != id)
+        {
+            continue;
+        }
+        index = count;
+        break;
+    }
+    return index;
+}
+
+void deactivateById(UserList **userList, int id)
+{
+    int index = findIndexById(*userList, id);
+    (&(*userList)->items[index])->status = Status::INACTIVE;
+}
+
+void removeById(UserList **userList, int id)
+{
+    int index = findIndexById(*userList, id);
+    memmove((*userList)->items + index, (*userList)->items + index + 1, ((*userList)->length - index) * sizeof(User));
+    (*userList)->length--;
+}
+
+void updateById(UserList **userList, int id)
+{
+    int index = findIndexById(*userList, id);
+    struct User *userUpdated = nullptr;
+    userUpdated = &(*userList)->items[index];
+
+    userUpdated->isAdmin = true;
+    userUpdated->status = Status::ACTIVE;
+    charStringSet(&userUpdated->person->xmlId, "a994e056-b7af-436b-839d-560a0155375f");
+    charStringSet(&userUpdated->person->name, "John");
+    charStringSet(&userUpdated->person->name, "john@mail.com");
+    charStringSet(&userUpdated->person->phone, "+79043564367");
+    userUpdated->person->age = userUpdated->person->age + 7;
+    charStringSet(&userUpdated->person->avatar->name, "Admin");
+    userUpdated->person->avatar->width = userUpdated->person->avatar->width * 2;
+    userUpdated->person->avatar->heigth = userUpdated->person->avatar->heigth * 3;
+}
+
+void usersPrint(UserList userList, CharString title)
+{
+    Serial.println(F("----"));
+    Serial.println((&title)->value);
+    Serial.println(F("----"));
+    Serial.print(F("Users length: "));
     Serial.println(userList.length);
 
     for (int8_t count = 0; count < userList.length; count++)
@@ -172,40 +276,41 @@ void usersPrint(UserList userList)
         struct User *user = &userList.items[count];
         struct Person *person = user->person;
         struct Avatar *avatar = person->avatar;
-        label = "User: " + (String)user->id;
-        printFormatValue(label);
-        Serial.print("Is admin: ");
-        Serial.println(user->isAdmin ? "true" : "false");
+        Serial.println("----");
+        Serial.print("User: ");
+        Serial.println(user->id);
+        Serial.println("----");
+        Serial.print(F("Is admin: "));
+        Serial.println(user->isAdmin ? F("true") : F("false"));
         Serial.print("Status: ");
-        Serial.println(user->status == Status::ACTIVE ? "Active" : "Incactive");
-        Serial.println("Personal info:");
-        Serial.print("Xml Id: ");
+        Serial.println(user->status == Status::ACTIVE ? F("Active") : F("Incactive"));
+        Serial.println(F("Personal info:"));
+        Serial.print(F("Xml Id: "));
         Serial.println(person->xmlId->value);
-        Serial.print("Name: ");
+        Serial.print(F("Name: "));
         Serial.println(person->name->value);
-        Serial.print("Email: ");
+        Serial.print(F("Email: "));
         Serial.println(person->email->value);
-        Serial.print("Phone: ");
+        Serial.print(F("Phone: "));
         Serial.println(person->phone->value);
-        Serial.print("Age: ");
+        Serial.print(F("Age: "));
         Serial.println(person->age);
-        Serial.println("Avatar info:");
-        Serial.print("Identifier: ");
+        Serial.println(F("Avatar info:"));
+        Serial.print(F("Identifier: "));
         Serial.println(avatar->id);
-        Serial.print("Name: ");
+        Serial.print(F("Name: "));
         Serial.println(avatar->name->value);
-        Serial.print("Width: ");
+        Serial.print(F("Width: "));
         Serial.println(avatar->width);
-        Serial.print("Heigth: ");
+        Serial.print(F("Heigth: "));
         Serial.println(avatar->heigth);
     }
-
-    label.~String();
 }
 
 void usersFree(UserList **userList)
 {
-    if (userList == nullptr || *userList == nullptr) {
+    if (userList == nullptr || *userList == nullptr)
+    {
         return;
     }
 
@@ -215,7 +320,8 @@ void usersFree(UserList **userList)
         {
             User *user = &(*userList)->items[i];
 
-            if (user->person == nullptr) {
+            if (user->person == nullptr)
+            {
                 continue;
             }
 

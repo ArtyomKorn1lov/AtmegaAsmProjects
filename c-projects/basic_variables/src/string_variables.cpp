@@ -4,10 +4,10 @@
 void executeChar()
 {
     char symbol = 'K';
-    Serial.print( "Input char: ");
+    Serial.print(F("Input char: "));
     Serial.println(symbol);
     symbol = 'p';
-    Serial.print("New char: ");
+    Serial.print(F("New char: "));
     Serial.println(symbol);
 }
 
@@ -19,31 +19,29 @@ void executeDynamicCharsString()
     bool isStringInit = stringInit(&string, &stringLength, &stringCapacity);
     if (!isStringInit)
     {
-        String label = "String creation error";
-        printFormatValue(label);
-        label.~String();
+        printFormatValue(F("String creation error"));
         return;
     }
     stringConcat(&string, &stringLength, &stringCapacity, "Hello");
-    Serial.print("Original string: ");
+    Serial.print(F("Original string: "));
     Serial.println(string);
     stringAddChar(&string, &stringLength, &stringCapacity, '!');
-    Serial.print("Add char to string: ");
+    Serial.print(F("Add char to string: "));
     Serial.println(string);
     stringInsertChar(&string, &stringLength, &stringCapacity, ' ', 5);
-    Serial.print("Insert char in string: ");
+    Serial.print(F("Insert char in string: "));
     Serial.println(string);
     stringReplaceChar(&string, &stringLength, &stringCapacity, '?', 6);
-    Serial.print("Replace char in string: ");
+    Serial.print(F("Replace char in string: "));
     Serial.println(string);
     stringRemoveChar(string, &stringLength, 6);
-    Serial.print("Remove char from string: ");
+    Serial.print(F("Remove char from string: "));
     Serial.println(string);
     stringConcat(&string, &stringLength, &stringCapacity, "world!");
-    Serial.print("Concat strings: ");
+    Serial.print(F("Concat strings: "));
     Serial.println(string);
     stringClear(string, &stringLength);
-    Serial.print("String cleared ");
+    Serial.print(F("String cleared "));
     Serial.println(string);
     stringFree(&string, &stringLength, &stringCapacity);
 }
@@ -51,41 +49,36 @@ void executeDynamicCharsString()
 void executeString()
 {
     String string = "Hello";
-    Serial.print("Original string: ");
+    Serial.print(F("Original string: "));
     Serial.println(string);
     string += '!';
-    Serial.print("Add char to string: ");
+    Serial.print(F("Add char to string: "));
     Serial.println(string);
     string = string.substring(0, 5) + ' ' + string.substring(5);
-    Serial.print("Insert char in string: ");
+    Serial.print(F("Insert char in string: "));
     Serial.println(string);
     string.setCharAt(6, '?');
-    Serial.print("Replace char in string: ");
+    Serial.print(F("Replace char in string: "));
     Serial.println(string);
     string.remove(6, 1);
-    Serial.print("Remove char from string: ");
+    Serial.print(F("Remove char from string: "));
     Serial.println(string);
     string.concat("world!");
-    Serial.print("Concat strings: ");
+    Serial.print(F("Concat strings: "));
     Serial.println(string);
     string = "";
-    Serial.print("String cleared ");
+    Serial.print(F("String cleared "));
     Serial.println(string);
     string.~String();
 }
 
 void processStringExample()
 {
-    String label = "String and char values";
-    printFormatValue(label);
-    label = "Char:";
-    printFormatValue(label);
+    printFormatValue(F("String and char values"));
+    printFormatValue(F("Char:"));
     executeChar();
-    label = "Dynamic chars string:";
-    printFormatValue(label);
+    printFormatValue(F("Dynamic chars string:"));
     executeDynamicCharsString();
-    label = "String by class:";
-    printFormatValue(label);
+    printFormatValue(F("String by class:"));
     executeString();
-    label.~String();
 }

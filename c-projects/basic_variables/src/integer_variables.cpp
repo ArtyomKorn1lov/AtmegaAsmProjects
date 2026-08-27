@@ -46,8 +46,7 @@ int calculateHighMathExample(int a, int b, int c, int d, int x, int y, int z)
 
 void calculateIntegers()
 {
-    String label = "Integer values:";
-    printFormatValue(label);
+    printFormatValue(F("Integer values:"));
     Serial.println(additionValues(24535, 7546));
     Serial.println(subtraction(14546, 24535));
     Serial.println(multiply(3000, 15));
